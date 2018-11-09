@@ -1,0 +1,65 @@
+#!ipxe
+set esc:hex 1b
+set bold ${esc:string}[1m
+set boldoff ${esc:string}[22m
+set fg_gre ${esc:string}[32m
+set fg_cya ${esc:string}[36m
+set fg_whi ${esc:string}[37m
+
+:start
+echo ${bold}${fg_gre}iPXE Ubuntu Loader${boldoff}
+echo
+dhcp || goto netconfig
+goto menu
+
+:netconfig
+echo Network Configuration:
+echo Available interfaces...
+ifstat
+imgfree
+echo -n Set network interface number [0 for net0, defaults to 0]: ${} && read net
+isset ${net} || set net 0
+echo -n IP: && read net${net}/ip
+echo -n Subnet mask: && read net${net}/netmask
+echo -n Gateway: && read net${net}/gateway
+echo -n DNS: && read dns
+ifopen net${net}
+goto menu
+
+:menu
+menu iPXE
+item lanboot Netboot Ubuntu from local server
+item netboot netboot.xyz
+item --gap Debug
+item netconfig Manual network configuration
+item debug iPXE shell
+item leave Exit iPXE
+item reboot Reboot
+choose option || goto start
+goto ${option}
+
+:netboot
+chain --replace --autofree https://boot.netboot.xyz/menu.ipxe || echo HTTPS failed. Trying HTTP.
+sleep 2
+chain --replace --autofree http://boot.netboot.xyz/menu.ipxe || echo Connection failed.
+sleep 3
+goto menu
+
+:lanboot
+set serverURL http://${net0/gateway}
+echo -n "Netboot server: "
+read serverURL || goto menu
+chain --autofree ${serverURL}/ubuntu.ipxe || echo Connection failed.
+sleep 3
+goto menu
+
+:leave
+exit
+
+:reboot
+reboot
+
+:debug
+echo Type "exit" to return to menu
+shell
+goto menu

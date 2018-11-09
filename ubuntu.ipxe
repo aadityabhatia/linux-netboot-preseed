@@ -1,0 +1,33 @@
+#!ipxe
+
+:boot_menu
+menu Ubuntu amd64 - ${serverURL}
+item --gap Installation options
+item preseed ${space} Install from preseed...
+item boot ${space} Install
+item rescue ${space} Rescue
+item expert ${space} Expert Install
+choose --default ${type} type || goto boot_menu
+goto deb_${type}
+
+:deb_preseed
+set preseedURL ${serverURL}/preseed.cfg
+echo -n Preseed URL:
+read preseedURL || goto boot_menu
+set install_params priority=critical
+set preseed_params auto=true preseed/url=${preseedURL}
+goto deb_boot
+
+:deb_rescue
+set install_params rescue/enable=true
+goto deb_boot
+
+:deb_expert
+set install_params priority=low
+goto deb_boot
+
+:deb_boot
+imgfree
+kernel ${serverURL}/netboot/ubuntu-installer/amd64/linux ${preseed_params} ${install_params} -- quiet ${params} initrd=initrd.gz
+initrd ${serverURL}/netboot/ubuntu-installer/amd64/initrd.gz
+boot
