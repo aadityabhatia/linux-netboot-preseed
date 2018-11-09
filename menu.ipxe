@@ -7,7 +7,6 @@ set fg_cya ${esc:string}[36m
 set fg_whi ${esc:string}[37m
 
 :start
-echo ${bold}${fg_gre}iPXE Ubuntu Loader${boldoff}
 echo
 dhcp || goto netconfig
 goto menu
@@ -27,31 +26,18 @@ ifopen net${net}
 goto menu
 
 :menu
-menu iPXE
-item lanboot Netboot Ubuntu from local server
-item netboot netboot.xyz
+menu iPXE v${version}
+item --gap OS options
+item boot_menu ${space} Install Ubuntu
+item netboot ${space} netboot.xyz
+item --gap
 item --gap Debug
-item netconfig Manual network configuration
-item debug iPXE shell
-item leave Exit iPXE
-item reboot Reboot
+item netconfig ${space} Manual network configuration
+item debug ${space} iPXE shell
+item reboot ${space} Reboot
+item leave ${space} Exit iPXE
 choose option || goto start
 goto ${option}
-
-:netboot
-chain --replace --autofree https://boot.netboot.xyz/menu.ipxe || echo HTTPS failed. Trying HTTP.
-sleep 2
-chain --replace --autofree http://boot.netboot.xyz/menu.ipxe || echo Connection failed.
-sleep 3
-goto menu
-
-:lanboot
-set serverURL http://${net0/gateway}
-echo -n "Netboot server: "
-read serverURL || goto menu
-chain --autofree ${serverURL}/ubuntu.ipxe || echo Connection failed.
-sleep 3
-goto menu
 
 :leave
 exit
@@ -63,3 +49,68 @@ reboot
 echo Type "exit" to return to menu
 shell
 goto menu
+
+:netboot
+chain --replace --autofree https://boot.netboot.xyz/menu.ipxe || echo HTTPS failed. Trying HTTP.
+sleep 2
+chain --replace --autofree http://boot.netboot.xyz/menu.ipxe || echo Connection failed.
+sleep 3
+goto menu
+
+:boot_menu
+menu iPXE v${version}
+item --gap Options
+item set_server ${space} Server: ${serverURL}
+item set_preseed ${space} Preseed: ${preseedURL}
+item --gap
+item --gap Install
+item boot_install ${space} Install
+item boot_expert ${space} Expert Install
+item boot_rescue ${space} Rescue
+choose --default ${boot_option} boot_option || goto menu
+goto ${boot_option}
+
+:set_server
+isset ${serverURL} || set serverURL http://${net0/gateway}:8000
+menu iPXE v${version}
+item set_server_manual ${space} Manual: ${serverURL}
+item set_server_cosmic ${space} Ubuntu 18.10 Cosmic Cuttlefish amd64
+item set_server_bionic ${space} Ubuntu 18.04 LTS Bionic Beaver amd64
+choose set_server_option || goto boot_menu
+goto ${set_server_option}
+
+:set_server_manual
+echo -n Netboot server: ${}
+read serverURL || goto boot_menu
+goto boot_menu
+
+:set_server_bionic
+set serverURL http://archive.ubuntu.com/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot
+goto boot_menu
+
+:set_server_cosmic
+set serverURL http://archive.ubuntu.com/ubuntu/dists/cosmic/main/installer-amd64/current/images/netboot
+goto boot_menu
+
+:set_preseed
+isset ${preseedURL} || set preseedURL http://${net0/gateway}:8000/preseed.cfg
+echo -n Preseed URL: ${}
+read preseedURL || goto boot_menu
+set install_params priority=critical
+set preseed_params auto=true preseed/url=${preseedURL}
+goto boot_menu
+
+:boot_rescue
+set install_params rescue/enable=true
+goto boot_install
+
+:boot_expert
+set install_params priority=low
+goto boot_install
+
+:boot_install
+imgfree
+kernel ${serverURL}/ubuntu-installer/amd64/linux ${preseed_params} ${install_params} -- quiet ${params} initrd=initrd.gz
+initrd ${serverURL}/ubuntu-installer/amd64/initrd.gz
+boot
+sleep 5
