@@ -1,7 +1,8 @@
 # build iPXE image for network boot
 
-git clone http://git.ipxe.org/ipxe.git
+apt-get install -y build-essential liblzma-dev
 mkdir tftp # output directory
+git clone http://git.ipxe.org/ipxe.git
 cd ipxe/src/
 
 ## enable HTTPS and image verification features
@@ -11,8 +12,8 @@ sed -i '/IMAGE_TRUST_CMD/ s/^[^ \t]*[ \t]/#define /' config/general.h
 ## fetch iPXE menu interface
 wget https://gist.githubusercontent.com/aadityabhatia/3c6da3cc3ee5e607a1851ea709fe8c65/raw/menu.ipxe
 make bin/ipxe.kpxe EMBED=menu.ipxe
-cd ../..
-mv ipxe/src/bin/ipxe.kpxe tftp/
+mv bin/ipxe.kpxe ../../tftp/
+
 
 # tftp server
 
@@ -26,6 +27,7 @@ ntftp 0.0.0.0 -l tftp/
 
 ## TODO: configure router DHCP boot image parameter, https://wiki.dd-wrt.com/wiki/index.php/PXE
 ## in case of DNSMasq: dhcp-boot=ipxe.kpxe,blowfish,192.168.1.2
+
 
 # netboot server
 
