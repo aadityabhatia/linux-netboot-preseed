@@ -9,7 +9,7 @@ sed -i '/DOWNLOAD_PROTO_HTTPS/ s/^[^ \t]*[ \t]/#define /' config/general.h
 sed -i '/IMAGE_TRUST_CMD/ s/^[^ \t]*[ \t]/#define /' config/general.h
 
 ## fetch iPXE menu interface
-wget https://gist.githubusercontent.com/aadityabhatia/3c6da3cc3ee5e607a1851ea709fe8c65/raw/c06f59eafea06d605dc720774537378cbcf248fe/menu.ipxe
+wget https://gist.githubusercontent.com/aadityabhatia/3c6da3cc3ee5e607a1851ea709fe8c65/raw/menu.ipxe
 make bin/ipxe.kpxe EMBED=menu.ipxe
 cd ../..
 mv ipxe/src/bin/ipxe.kpxe tftp/
