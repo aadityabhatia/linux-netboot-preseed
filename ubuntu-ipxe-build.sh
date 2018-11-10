@@ -11,8 +11,8 @@ sed -i '/IMAGE_TRUST_CMD/ s/^[^ \t]*[ \t]/#define /' config/general.h
 
 ## fetch iPXE menu interface
 wget https://gist.githubusercontent.com/aadityabhatia/3c6da3cc3ee5e607a1851ea709fe8c65/raw/menu.ipxe
-make bin/ipxe.kpxe EMBED=menu.ipxe
-mv bin/ipxe.kpxe ../../tftp/
+make bin/ipxe.kpxe bin-x86_64-efi/ipxe.efi EMBED=menu.ipxe
+mv bin/ipxe.kpxe bin-x86_64-efi/ipxe.efi ../../tftp/
 
 
 # tftp server
@@ -26,7 +26,7 @@ npm install --global tftp
 ntftp 0.0.0.0 -l tftp/
 
 ## TODO: configure router DHCP boot image parameter, https://wiki.dd-wrt.com/wiki/index.php/PXE
-## in case of DNSMasq: dhcp-boot=ipxe.kpxe,blowfish,192.168.1.2
+## in case of DNSMasq: dhcp-boot=ipxe.efi,blowfish,192.168.1.2
 
 
 # netboot server
