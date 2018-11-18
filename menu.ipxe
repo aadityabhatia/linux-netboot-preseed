@@ -1,10 +1,4 @@
 #!ipxe
-set esc:hex 1b
-set bold ${esc:string}[1m
-set boldoff ${esc:string}[22m
-set fg_gre ${esc:string}[32m
-set fg_cya ${esc:string}[36m
-set fg_whi ${esc:string}[37m
 
 :start
 echo
@@ -71,7 +65,7 @@ choose --default ${boot_option} boot_option || goto menu
 goto ${boot_option}
 
 :set_server
-isset ${serverURL} || set serverURL http://${net0/gateway}:8000
+isset ${serverURL} || set serverURL http://${net0/gateway}:8000/netboot
 menu iPXE v${version}
 item set_server_manual ${space} Manual: ${serverURL}
 item set_server_cosmic ${space} Ubuntu 18.10 Cosmic Cuttlefish amd64
@@ -110,7 +104,7 @@ goto boot_install
 
 :boot_install
 imgfree
-kernel ${serverURL}/ubuntu-installer/amd64/linux ${preseed_params} ${install_params} -- quiet ${params} initrd=initrd.gz
+kernel ${serverURL}/ubuntu-installer/amd64/linux ${preseed_params} ${install_params} -- quiet initrd=initrd.gz
 initrd ${serverURL}/ubuntu-installer/amd64/initrd.gz
 boot
 sleep 5
