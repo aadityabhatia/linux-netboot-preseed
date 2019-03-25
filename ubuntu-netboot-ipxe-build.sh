@@ -18,18 +18,13 @@ echo Build output: $OUTPUT
 # tftp server
 
 ## install node.js or use another program to serve ipxe.kpxe over tftp; place the image on router if supported
-curl -sL https://deb.nodesource.com/gpgkey/nodesource.gpg.key -o /etc/apt/trusted.gpg.d/nodesource.asc
-echo "deb http://deb.nodesource.com/node_10.x $(lsb_release -sc) main" > /etc/apt/sources.list.d/nodesource.list
-apt-get update
-apt-get -y install nodejs
-npm install --global tftp
-ntftp 0.0.0.0 -l $OUTPUT
+apt install tftpd-hpa
+mv $OUTPUT/* /var/lib/tftpboot/
 
-## TODO: configure router DHCP boot image parameter, https://wiki.dd-wrt.com/wiki/index.php/PXE
+## configure router DHCP boot image parameter, https://wiki.dd-wrt.com/wiki/index.php/PXE
 ## in case of DNSMasq: dhcp-boot=ipxe.efi,blowfish,192.168.1.2
 
-
-# netboot server
+# netboot server - optional
 
 mkdir netboot
 cd netboot
@@ -39,8 +34,11 @@ wget http://archive.ubuntu.com/ubuntu/dists/bionic/main/installer-amd64/current/
 tar zxf netboot.tar.gz
 cd ..
 
-## fetch and update preseed file
-wget https://gist.githubusercontent.com/aadityabhatia/0ec8f9016e1cc1e2583804d17b9e6629/raw/5780d67fb415474ab402de8e215431596d871e90/preseed.cfg
-
 ## serve locally over http
 python3 -m http.server
+
+# preseed
+
+## install and run preseed generator
+npm install --global preseed
+preseed
