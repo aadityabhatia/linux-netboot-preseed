@@ -65,7 +65,7 @@ choose --default ${boot_option} boot_option || goto menu
 goto ${boot_option}
 
 :set_server
-isset ${serverURL} || set serverURL http://${net0/gateway}:8000/netboot
+isset ${serverURL} || set serverURL http://${net0/gateway}:19000/netboot
 menu iPXE v${version}
 item set_server_manual ${space} Manual: ${serverURL}
 item set_server_cosmic ${space} Ubuntu 18.10 Cosmic Cuttlefish amd64
@@ -87,7 +87,7 @@ set serverURL http://archive.ubuntu.com/ubuntu/dists/cosmic/main/installer-amd64
 goto boot_menu
 
 :set_preseed
-isset ${preseedURL} || set preseedURL http://${net0/gateway}:8000/preseed.cfg
+isset ${preseedURL} || set preseedURL http://${net0/gateway}:18000/
 echo -n Preseed URL: ${}
 read preseedURL || goto boot_menu
 set install_params priority=critical
