@@ -91,7 +91,7 @@ isset ${preseedURL} || set preseedURL http://${net0/gateway}:8000/preseed.cfg
 echo -n Preseed URL: ${}
 read preseedURL || goto boot_menu
 set install_params priority=critical
-set preseed_params auto=true preseed/url=${preseedURL}
+set preseed_params auto=true interface=auto preseed/url=${preseedURL}
 goto boot_menu
 
 :boot_rescue
