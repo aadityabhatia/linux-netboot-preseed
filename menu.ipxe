@@ -68,6 +68,7 @@ goto ${boot_option}
 isset ${serverURL} || set serverURL http://${net0/gateway}:19000/netboot
 menu iPXE v${version}
 item set_server_manual ${space} Manual: ${serverURL}
+item set_server_eoan ${space} Ubuntu 19.10 Eoan Ermine amd64
 item set_server_disco ${space} Ubuntu 19.04 Disco Dingo amd64
 item set_server_bionic ${space} Ubuntu 18.04 LTS Bionic Beaver amd64
 choose set_server_option || goto boot_menu
@@ -76,6 +77,10 @@ goto ${set_server_option}
 :set_server_manual
 echo -n Netboot server: ${}
 read serverURL || goto boot_menu
+goto boot_menu
+
+:set_server_eoan
+set serverURL http://archive.ubuntu.com/ubuntu/dists/eoan/main/installer-amd64/current/images/netboot
 goto boot_menu
 
 :set_server_bionic
