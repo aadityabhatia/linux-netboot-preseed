@@ -80,7 +80,7 @@ read serverURL || goto boot_menu
 goto boot_menu
 
 :set_server_focal
-set serverURL http://archive.ubuntu.com/ubuntu/dists/focal/main/installer-amd64/current/images/netboot
+set serverURL http://archive.ubuntu.com/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot
 goto boot_menu
 
 :set_server_eoan
