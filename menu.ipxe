@@ -3,7 +3,7 @@
 :start
 echo
 dhcp || goto netconfig
-goto menu
+goto timesync
 
 :netconfig
 echo Network Configuration:
@@ -17,6 +17,10 @@ echo -n Subnet mask: && read net${net}/netmask
 echo -n Gateway: && read net${net}/gateway
 echo -n DNS: && read dns
 ifopen net${net}
+goto timesync
+
+:timesync
+ntp pool.ntp.org || echo NTP command is not available.
 goto menu
 
 :menu
@@ -112,4 +116,6 @@ imgfree
 kernel ${serverURL}/ubuntu-installer/amd64/linux ${preseed_params} ${install_params} -- quiet initrd=initrd.gz
 initrd ${serverURL}/ubuntu-installer/amd64/initrd.gz
 boot
+echo Exiting iPXE boot sequence
+shell
 sleep 5

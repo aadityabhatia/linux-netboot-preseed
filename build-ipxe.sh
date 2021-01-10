@@ -13,5 +13,7 @@ test -d ipxe && (cd ipxe && git pull) || git clone https://github.com/ipxe/ipxe.
 cd ipxe/src/
 sed -i '/DOWNLOAD_PROTO_HTTPS/ s/^[^ \t]*[ \t]/#define /' config/general.h
 sed -i '/IMAGE_TRUST_CMD/ s/^[^ \t]*[ \t]/#define /' config/general.h
+sed -i '/NET_PROTO_IPV6/ s/^[^ \t]*[ \t]/#define /' config/general.h
+sed -i '/NTP_CMD/ s/^[^ \t]*[ \t]/#define /' config/general.h
 make $BUILD_OUTPUT EMBED=$menu
 mv -v $BUILD_OUTPUT $pwd
